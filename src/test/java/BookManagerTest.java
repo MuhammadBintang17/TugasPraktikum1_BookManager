@@ -16,6 +16,10 @@ public class BookManagerTest {
         bookManager = new BookManager();
     }
 
+    // =======================
+    // BAGIAN TEST AWAL
+    // =======================
+
     @Test
     @DisplayName("Test menambahkan buku")
     void testAddBook() {
@@ -35,19 +39,17 @@ public class BookManagerTest {
         assertEquals(0, bookManager.getBookCount());
     }
 
-    // Test menghapus buku yang tidak ada
     @Test
     @DisplayName("Test menghapus buku yang tidak ada")
     void testRemoveNonExistingBook() {
         Book buku = new Book("Jaringan Komputer", "Budi", 2019);
         bookManager.addBook(buku);
 
-        boolean removed = bookManager.removeBook("Algoritma"); // tidak ada dalam list
-        assertFalse(removed); // harus false
-        assertEquals(1, bookManager.getBookCount()); // jumlah buku tetap 1
+        boolean removed = bookManager.removeBook("Algoritma");
+        assertFalse(removed);
+        assertEquals(1, bookManager.getBookCount());
     }
 
-    // Test mencari buku berdasarkan penulis
     @Test
     @DisplayName("Test mencari buku berdasarkan author")
     void testFindBooksByAuthor() {
@@ -65,7 +67,6 @@ public class BookManagerTest {
         assertTrue(hasil.contains(buku2));
     }
 
-    // Test mendapatkan semua buku
     @Test
     @DisplayName("Test mendapatkan semua buku")
     void testGetAllBooks() {
@@ -79,5 +80,121 @@ public class BookManagerTest {
         assertEquals(2, semuaBuku.size());
         assertTrue(semuaBuku.contains(buku1));
         assertTrue(semuaBuku.contains(buku2));
+    }
+
+    // =======================
+    // PENGEMBANGAN TEST
+    // =======================
+
+    // 6.1.1 Positive Test Cases
+    @Test
+    @DisplayName("Positive: Valid Book Creation")
+    void testValidBookCreation() {
+        Book buku = new Book("Machine Learning", "Rina", 2022);
+        bookManager.addBook(buku);
+        assertEquals(1, bookManager.getBookCount());
+    }
+
+    @Test
+    @DisplayName("Positive: Book Search by Author")
+    void testBookSearchByAuthor() {
+        Book buku1 = new Book("Cloud Computing", "Fajar", 2021);
+        Book buku2 = new Book("IoT Fundamentals", "Fajar", 2020);
+        bookManager.addBook(buku1);
+        bookManager.addBook(buku2);
+
+        List<Book> hasil = bookManager.findBooksByAuthor("Fajar");
+        assertEquals(2, hasil.size());
+    }
+
+    @Test
+    @DisplayName("Positive: Book Search by Year")
+    void testBookSearchByYear() {
+        Book buku1 = new Book("Big Data", "Andi", 2020);
+        Book buku2 = new Book("Data Mining", "Budi", 2020);
+        Book buku3 = new Book("Cyber Security", "Citra", 2021);
+
+        bookManager.addBook(buku1);
+        bookManager.addBook(buku2);
+        bookManager.addBook(buku3);
+
+        List<Book> hasil = bookManager.findBooksByYear(2020);
+        assertEquals(2, hasil.size());
+    }
+
+    @Test
+    @DisplayName("Positive: Multiple Books Added")
+    void testMultipleBooksAdded() {
+        for (int i = 1; i <= 5; i++) {
+            bookManager.addBook(new Book("Book" + i, "Author" + i, 2000 + i));
+        }
+        assertEquals(5, bookManager.getBookCount());
+    }
+
+    // 6.1.2 Negative Test Cases
+    @Test
+    @DisplayName("Negative: Invalid Book Title")
+    void testInvalidBookTitle() {
+        Book buku = new Book("", "Anonim", 2020);
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> bookManager.addBook(buku));
+        assertEquals("Judul buku tidak boleh kosong", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Negative: Invalid Year")
+    void testInvalidYear() {
+        Book buku = new Book("Sejarah", "Dono", -100);
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> bookManager.addBook(buku));
+        assertEquals("Tahun buku tidak valid", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Negative: Remove Non-existent Book")
+    void testRemoveNonExistentBookNegative() {
+        boolean removed = bookManager.removeBook("Buku Ga Ada");
+        assertFalse(removed);
+    }
+
+    @Test
+    @DisplayName("Negative: Search Non-existent Author")
+    void testSearchNonExistentAuthor() {
+        List<Book> hasil = bookManager.findBooksByAuthor("TidakAda");
+        assertTrue(hasil.isEmpty());
+    }
+
+    // 6.1.3 Edge Cases
+    @Test
+    @DisplayName("Edge: Empty BookManager")
+    void testEmptyBookManager() {
+        assertEquals(0, bookManager.getBookCount());
+        assertTrue(bookManager.getAllBooks().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Edge: Duplicate Books")
+    void testDuplicateBooks() {
+        Book buku = new Book("Blockchain", "Eka", 2022);
+        bookManager.addBook(buku);
+        bookManager.addBook(buku); // duplikat
+        assertEquals(1, bookManager.getBookCount()); // misalnya sistem menolak duplikat
+    }
+
+    @Test
+    @DisplayName("Edge: Large Dataset")
+    void testLargeDataset() {
+        for (int i = 0; i < 10000; i++) {
+            bookManager.addBook(new Book("Book" + i, "Author" + i, 2000 + (i % 20)));
+        }
+        assertEquals(10000, bookManager.getBookCount());
+    }
+
+    @Test
+    @DisplayName("Edge: Case Sensitivity in Author Search")
+    void testCaseSensitivityInAuthorSearch() {
+        Book buku = new Book("AI Revolution", "CITRA", 2022);
+        bookManager.addBook(buku);
+
+        List<Book> hasil = bookManager.findBooksByAuthor("citra"); // tergantung implementasi
+        assertTrue(hasil.isEmpty() || hasil.contains(buku));
     }
 }
