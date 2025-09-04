@@ -14,8 +14,12 @@ public class BookManager {
         if (buku == null) {
             throw new IllegalArgumentException("Buku tidak boleh kosong");
         }
-        Buku.add(buku);
+        // validasi duplikat
+        if (!Buku.contains(buku)) {
+            Buku.add(buku);
+        }
     }
+
 
     public boolean removeBook(String judul) {
         if (judul == null || judul.trim().isEmpty()) {

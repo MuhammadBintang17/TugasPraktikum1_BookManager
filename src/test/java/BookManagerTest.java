@@ -135,17 +135,17 @@ public class BookManagerTest {
     @Test
     @DisplayName("Negative: Invalid Book Title")
     void testInvalidBookTitle() {
-        Book buku = new Book("", "Anonim", 2020);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> bookManager.addBook(buku));
-        assertEquals("Judul buku tidak boleh kosong", ex.getMessage());
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> new Book("", "Anonim", 2020));
+        assertEquals("Judul harus diisi", ex.getMessage());
     }
 
     @Test
     @DisplayName("Negative: Invalid Year")
     void testInvalidYear() {
-        Book buku = new Book("Sejarah", "Dono", -100);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> bookManager.addBook(buku));
-        assertEquals("Tahun buku tidak valid", ex.getMessage());
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> new Book("Sejarah", "Dono", -100));
+        assertEquals("Tahun hanya bisa diisi dari tahun 2000 sampai 2100", ex.getMessage());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class BookManagerTest {
         Book buku = new Book("Blockchain", "Eka", 2022);
         bookManager.addBook(buku);
         bookManager.addBook(buku); // duplikat
-        assertEquals(1, bookManager.getBookCount()); // misalnya sistem menolak duplikat
+        assertEquals(1, bookManager.getBookCount()); // sistem menolak duplikat
     }
 
     @Test
@@ -194,7 +194,7 @@ public class BookManagerTest {
         Book buku = new Book("AI Revolution", "CITRA", 2022);
         bookManager.addBook(buku);
 
-        List<Book> hasil = bookManager.findBooksByAuthor("citra"); // tergantung implementasi
+        List<Book> hasil = bookManager.findBooksByAuthor("citra"); // implementasi case-insensitive
         assertTrue(hasil.isEmpty() || hasil.contains(buku));
     }
 }
